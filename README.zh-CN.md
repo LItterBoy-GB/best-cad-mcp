@@ -307,6 +307,33 @@ v1.6 引入图纸级边界拓扑：能从多个实体、直线-直线与受支�
 事务和回滚能降低风险，但无法保证从每一种 AutoCAD 或 COM 故障中恢复。
 重要图纸请先使用副本。
 
+## 已知局限
+
+- **视图定位仅在顶视/平面模型空间下精确。**未加 twist 的平面视图能提供数值稳定的
+  世界↔像素映射；视图 twist 会被纳入映射并标记；非平面与三维视图退化为二维平面
+  近似，返回 `transform_confidence=low` 与显式警告；布局（paperspace）视口映射
+  尚不完整支持。这些场景下应携带返回的 `limitations` 与置信度，而不是声称精确定位。
+- **栅格覆盖层需要 `[visual]` extra。**缺少 Pillow/cairosvg 时，覆盖层降级为 SVG
+  回退并给出警告；WMF 导出依赖 Windows 原生 GDI+ 转换路径。
+- **尺寸绑定是启发式的。**尺寸按证据和置信度匹配到候选几何；歧义或无法绑定的
+  尺寸按设计保持 `unknown`，绝不会被误报为已满足。
+- **语义检测是确定性的、基于规则的。**更丰富的对象（长圆孔、螺栓圆周阵列、墙体、
+  门、线缆、标题栏、BOM 表格）以带置信度的候选形式报告，不是保证性分类，且服务器
+  内部不运行任何外部模型。
+- **CADPlan 只执行固定操作集。**高级三维实体、布尔运算、修剪/延伸、布局编辑、
+  打印出图和保存/打开不属于计划操作，这些请直接使用对应 MCP 工具。
+- **回滚是尽力而为的。**事务执行基于 AutoCAD undo mark（`StartUndoMark`/
+  `EndUndoMark` + undo），无法保证从每一种 COM 或 AutoCAD 故障中恢复；失败的计划
+  总会返回 `completed_steps` 供检查。
+- **扫描有上限。**`scan_all_entities` 遵循 `max_entities`，超出上限时报告
+  `truncated`；`topology_detail="full"` 在大型图纸上开销较大，默认应使用 summary 拓扑。
+- **图片临摹依赖 Agent 侧 VLM 与标定。**服务器负责准备、验证、编译和保真约束，
+  从不调用模型提供商。没有可靠尺寸标定时，临摹图纸会携带比例警告，不得声称具备
+  真实工程比例。
+- **仅限 Windows + AutoCAD COM。**工具调用在单一 COM 线程上串行执行，服务器必须与
+  AutoCAD 运行在同一 Windows 账户；托管 CI 无法覆盖真实 COM 路径——真机冒烟基准需通过
+  `scripts/verify_cad_understanding_workflow.py` 在本机运行。
+
 ## 工作区与数据
 
 `CAD_MCP_WORKSPACE_ROOT` 控制

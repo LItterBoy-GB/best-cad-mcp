@@ -12,7 +12,7 @@
 Inspect a DWG, reason over structured geometry, plan guarded edits, validate the
 result, and export visual evidence without hiding agent state inside the drawing.
 
-[简体中文](https://github.com/LokmenoWer/best-cad-mcp/blob/master/README.zh-CN.md) · [Live demo](#live-autocad-demo) · [Install](#quick-start) · [Workflow](#the-guarded-workflow) · [Tool profiles](#tool-profiles) · [Safety](#safety-model)
+[简体中文](https://github.com/LokmenoWer/best-cad-mcp/blob/master/README.zh-CN.md) · [Live demo](#live-autocad-demo) · [Install](#quick-start) · [Workflow](#the-guarded-workflow) · [Tool profiles](#tool-profiles) · [Safety](#safety-model) · [Limitations](#known-limitations)
 
 ![Real AutoCAD three-view drawing of a flanged bearing housing](https://raw.githubusercontent.com/LokmenoWer/best-cad-mcp/master/docs/images/readme-cad-real.png)
 
@@ -335,6 +335,44 @@ the referenced sidecars so strict consumers can detect contract changes.
 
 Transaction and rollback support reduce risk but cannot guarantee recovery from
 every AutoCAD or COM failure. Work on copies when the drawing is valuable.
+
+## Known limitations
+
+- **View grounding is exact only for plan/top model-space views.** An
+  untwisted plan view gives numerically stable world↔pixel mapping. View
+  twist is included and flagged; non-plan and 3D views fall back to a 2D
+  plan-view approximation with `transform_confidence=low` and explicit
+  warnings; paperspace/layout viewport mapping is not fully supported. Carry
+  returned `limitations` and confidence forward instead of claiming exact
+  grounding in those cases.
+- **Raster overlays need the `[visual]` extra.** Without Pillow/cairosvg the
+  overlay degrades to an SVG fallback with a warning; WMF exports rely on the
+  native Windows GDI+ conversion path.
+- **Dimension binding is heuristic.** Dimensions are matched to candidate
+  geometry with evidence and confidence; ambiguous or unbound dimensions stay
+  `unknown` by design and are never reported as falsely satisfied.
+- **Semantic detection is deterministic and rule-based.** Richer objects
+  (slots, bolt-circle patterns, walls, doors, wires, title blocks, BOM
+  tables) are reported as candidates with confidence, not guaranteed
+  classifications, and no external model runs inside the server.
+- **CADPlan executes a fixed operation set.** Advanced 3D solids, boolean
+  operations, trim/extend, layout editing, plotting, and save/open are not
+  plan operations; use the direct MCP tools for those.
+- **Rollback is best-effort.** Transactional execution uses AutoCAD undo
+  marks (`StartUndoMark`/`EndUndoMark` + undo); it cannot guarantee recovery
+  from every COM or AutoCAD failure, and a failed plan always reports
+  `completed_steps` for inspection.
+- **Scans are bounded.** `scan_all_entities` honors `max_entities` and
+  reports `truncated` when the drawing exceeds the cap; `topology_detail="full"`
+  is expensive on large drawings, so use summary topology by default.
+- **Image tracing depends on the agent-side VLM and calibration.** The server
+  prepares, validates, compiles, and enforces fidelity; it never calls a
+  model provider. Without reliable dimension calibration, traced drawings
+  carry a scale warning and must not be claimed as true engineering scale.
+- **Windows + AutoCAD COM only.** Tool calls are serialized on one COM
+  thread, the server must run on the same Windows account as AutoCAD, and
+  hosted CI cannot exercise live COM paths — live smoke benchmarks run
+  locally via `scripts/verify_cad_understanding_workflow.py`.
 
 ## Workspace and data
 
