@@ -1,8 +1,6 @@
 """CAD MCP Tools — View control, zoom, pan, layout/viewport management."""
-from typing import Optional, List
 from src.cad_controller import get_controller
 from src.cad_database import get_database
-from src.cad_utils import format_success
 
 ctrl = get_controller()
 db = get_database()
@@ -82,9 +80,9 @@ def get_layouts() -> str:
     if not layouts:
         return "无布局信息"
     lines = [f"共 {len(layouts)} 个布局:"]
-    for i, l in enumerate(layouts):
-        type_str = "模型空间" if l["model_type"] else "图纸空间"
-        lines.append(f"  [{i}] {l['name']:<20s} [{type_str}] Tab:{l['tab_order']}")
+    for i, layout in enumerate(layouts):
+        type_str = "模型空间" if layout["model_type"] else "图纸空间"
+        lines.append(f"  [{i}] {layout['name']:<20s} [{type_str}] Tab:{layout['tab_order']}")
     return "\n".join(lines)
 
 

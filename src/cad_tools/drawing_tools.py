@@ -97,7 +97,7 @@ def draw_line(start_x: float, start_y: float, end_x: float, end_y: float,
                      geometry={"start_point": [start_x, start_y, start_z],
                                "end_point": [end_x, end_y, end_z]})
     length = ((end_x-start_x)**2 + (end_y-start_y)**2)**0.5
-    return format_success(f"已绘制直线", handle=_com_get(line, "Handle", ""),
+    return format_success("已绘制直线", handle=_com_get(line, "Handle", ""),
                           layer=_com_get(line, "Layer", "0"),
                           length=f"{length:.2f}")
 
@@ -125,7 +125,7 @@ def draw_circle(center_x: float, center_y: float, radius: float,
     db.upsert_entity(circle.Handle, "Circle", "AcDbCircle",
                      layer=circle.Layer, color=_com_get(circle, "Color", 256),
                      geometry={"center": [center_x, center_y, 0], "radius": radius})
-    return format_success(f"已绘制圆", handle=circle.Handle,
+    return format_success("已绘制圆", handle=circle.Handle,
                           layer=circle.Layer, radius=radius,
                           diameter=radius*2, area=f"{3.14159*radius**2:.2f}")
 
@@ -173,7 +173,7 @@ def draw_arc(center_x: float, center_y: float, radius: float,
                                "start_parameter": math.radians(start_angle),
                                "end_parameter": math.radians(end_angle),
                                "parameter_unit": "radian"})
-    return format_success(f"已绘制圆弧", handle=arc.Handle, radius=radius,
+    return format_success("已绘制圆弧", handle=arc.Handle, radius=radius,
                           span=f"{start_angle}° → {end_angle}°")
 
 
@@ -211,7 +211,7 @@ def draw_ellipse(center_x: float, center_y: float,
                                "radius_ratio": radius_ratio,
                                "normal": [0, 0, 1],
                                "is_arc": False})
-    return format_success(f"已绘制椭圆", handle=ell.Handle, ratio=radius_ratio)
+    return format_success("已绘制椭圆", handle=ell.Handle, ratio=radius_ratio)
 
 
 def draw_ellipse_arc(center_x: float, center_y: float,
@@ -278,7 +278,7 @@ def draw_polyline(points: List[float], closed: bool = False,
                      layer=pline.Layer, color=_com_get(pline, "Color", 256),
                      geometry={"vertices": vertices, "closed": closed,
                                "length": pline.Length})
-    return format_success(f"已绘制多段线", handle=pline.Handle,
+    return format_success("已绘制多段线", handle=pline.Handle,
                           vertices=len(vertices), closed=closed,
                           length=f"{pline.Length:.2f}")
 
@@ -303,13 +303,13 @@ def draw_3d_polyline(points: List[float], closed: bool = False,
     pline = ctrl.add_polyline_3d(points, closed)
     if color != "bylayer":
         try: _com_set(pline, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     vertices = [[points[i], points[i+1], points[i+2]] for i in range(0, len(points), 3)]
     db.upsert_entity(pline.Handle, "3DPolyline", "AcDb3dPolyline",
                      layer=pline.Layer, color=_com_get(pline, "Color", 256),
                      geometry={"vertices": vertices, "closed": closed,
                                "length": pline.Length})
-    return format_success(f"已绘制3D多段线", handle=pline.Handle,
+    return format_success("已绘制3D多段线", handle=pline.Handle,
                           vertices=len(vertices), closed=closed)
 
 
@@ -339,7 +339,7 @@ def draw_rectangle(x1: float, y1: float, x2: float, y2: float,
                      geometry={"vertices": [[x1,y1],[x2,y1],[x2,y2],[x1,y2]],
                                "closed": True})
     w, h = abs(x2-x1), abs(y2-y1)
-    return format_success(f"已绘制矩形", handle=rect.Handle,
+    return format_success("已绘制矩形", handle=rect.Handle,
                           width=f"{w:.2f}", height=f"{h:.2f}",
                           area=f"{w*h:.2f}")
 
@@ -417,7 +417,7 @@ def draw_spline(fit_points: List[float],
                          "closed": False,
                          "is_closed": False,
                      })
-    return format_success(f"已绘制样条曲线", handle=spline.Handle, fit_points=len(pts))
+    return format_success("已绘制样条曲线", handle=spline.Handle, fit_points=len(pts))
 
 
 def draw_point(x: float, y: float, z: float = 0.0,
@@ -443,7 +443,7 @@ def draw_point(x: float, y: float, z: float = 0.0,
     db.upsert_entity(pt.Handle, "Point", "AcDbPoint",
                      layer=pt.Layer, color=_com_get(pt, "Color", 256),
                      geometry={"point": [x, y, z]})
-    return format_success(f"已绘制点", handle=pt.Handle, position=f"({x}, {y}, {z})")
+    return format_success("已绘制点", handle=pt.Handle, position=f"({x}, {y}, {z})")
 
 
 def draw_text(text: str, insert_x: float, insert_y: float,
@@ -508,7 +508,7 @@ def draw_mtext(text: str, insert_x: float, insert_y: float,
                      geometry={"text_string": text, "height": height,
                                "width": width,
                                "insertion_point": [insert_x, insert_y, 0]})
-    return format_success(f"已绘制多行文字", handle=mt.Handle, height=height,
+    return format_success("已绘制多行文字", handle=mt.Handle, height=height,
                           width=width if width else "自动")
 
 
@@ -537,7 +537,7 @@ def draw_donut(center_x: float, center_y: float, inner_radius: float,
             except Exception:
                 pass
         handles.append(ent.Handle)
-    return format_success(f"已绘制圆环", handles=handles,
+    return format_success("已绘制圆环", handles=handles,
                           inner=inner_radius, outer=outer_radius,
                           thickness=outer_radius-inner_radius)
 
@@ -563,12 +563,12 @@ def draw_ray(origin_x: float, origin_y: float, origin_z: float = 0.0,
                        (direction_x, direction_y, direction_z))
     if color != "bylayer":
         try: _com_set(ray, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(ray.Handle, "Ray", "AcDbRay",
                      layer=ray.Layer, color=_com_get(ray, "Color", 256),
                      geometry={"origin": [origin_x, origin_y, origin_z],
                                "direction": [direction_x, direction_y, direction_z]})
-    return format_success(f"已绘制射线", handle=ray.Handle,
+    return format_success("已绘制射线", handle=ray.Handle,
                           origin=f"({origin_x},{origin_y},{origin_z})")
 
 
@@ -593,12 +593,12 @@ def draw_xline(point1_x: float, point1_y: float, point1_z: float = 0.0,
                            (point2_x, point2_y, point2_z))
     if color != "bylayer":
         try: _com_set(xline, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(xline.Handle, "XLine", "AcDbXline",
                      layer=xline.Layer, color=_com_get(xline, "Color", 256),
                      geometry={"point1": [point1_x, point1_y, point1_z],
                                "point2": [point2_x, point2_y, point2_z]})
-    return format_success(f"已绘制构造线", handle=xline.Handle)
+    return format_success("已绘制构造线", handle=xline.Handle)
 
 
 def draw_mline(points: List[float],
@@ -621,11 +621,11 @@ def draw_mline(points: List[float],
     mline = ctrl.add_mline(pts)
     if color != "bylayer":
         try: _com_set(mline, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(mline.Handle, "MLine", "AcDbMLine",
                      layer=mline.Layer, color=_com_get(mline, "Color", 256),
                      geometry={"vertices": pts})
-    return format_success(f"已绘制多线", handle=mline.Handle,
+    return format_success("已绘制多线", handle=mline.Handle,
                           vertices=len(pts))
 
 
@@ -656,11 +656,11 @@ def draw_2d_solid(p1_x: float, p1_y: float, p1_z: float = 0.0,
     solid = ctrl.add_solid(pts)
     if color != "bylayer":
         try: _com_set(solid, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(solid.Handle, "2DSolid", "AcDbSolid",
                      layer=solid.Layer, color=_com_get(solid, "Color", 256),
                      geometry={"vertices": [[p[0], p[1], p[2]] for p in pts]})
-    return format_success(f"已绘制2D实体", handle=solid.Handle,
+    return format_success("已绘制2D实体", handle=solid.Handle,
                           vertices=len(pts))
 
 
@@ -685,12 +685,12 @@ def draw_raster_image(filepath: str, insert_x: float, insert_y: float,
     img = ctrl.add_raster_image(filepath, insert_x, insert_y, scale, rotation, insert_z)
     if layer:
         try: img.Layer = layer
-        except: pass
+        except Exception: pass
     db.upsert_entity(img.Handle, "RasterImage", "AcDbRasterImage",
                      layer=img.Layer, color=_com_get(img, "Color", 256) if hasattr(img, 'Color') else 256,
                      geometry={"filepath": filepath, "insertion_point": [insert_x, insert_y, insert_z],
                                "scale": scale, "rotation": rotation})
-    return format_success(f"已插入光栅图像", handle=img.Handle,
+    return format_success("已插入光栅图像", handle=img.Handle,
                           filepath=filepath, scale=scale)
 
 
@@ -698,7 +698,7 @@ def draw_tolerance(text: str, insert_x: float, insert_y: float,
                    insert_z: float = 0.0, direction_x: float = 1.0,
                    direction_y: float = 0.0, direction_z: float = 0.0,
                    layer: Optional[str] = None, color: str = "bylayer") -> str:
-    """绘制几何公差标注（GD&T 特征控制框）。
+    r"""绘制几何公差标注（GD&T 特征控制框）。
 
     用于标注形状和位置公差，如平面度、平行度、位置度等。
 
@@ -716,13 +716,13 @@ def draw_tolerance(text: str, insert_x: float, insert_y: float,
                              direction_x, direction_y, direction_z)
     if color != "bylayer":
         try: _com_set(tol, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(tol.Handle, "Tolerance", "AcDbTolerance",
                      layer=tol.Layer, color=_com_get(tol, "Color", 256),
                      geometry={"text": text,
                                "insertion_point": [insert_x, insert_y, insert_z],
                                "direction": [direction_x, direction_y, direction_z]})
-    return format_success(f"已绘制公差标注", handle=tol.Handle, text=text)
+    return format_success("已绘制公差标注", handle=tol.Handle, text=text)
 
 
 def draw_trace(points: List[float],
@@ -744,11 +744,11 @@ def draw_trace(points: List[float],
     trace = ctrl.add_trace(points)
     if color != "bylayer":
         try: _com_set(trace, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(trace.Handle, "Trace", "AcDbTrace",
                      layer=trace.Layer, color=_com_get(trace, "Color", 256),
                      geometry={"points": [[points[i], points[i+1]] for i in range(0, len(points), 2)]})
-    return format_success(f"已绘制宽线(Trace)", handle=trace.Handle)
+    return format_success("已绘制宽线(Trace)", handle=trace.Handle)
 
 
 def insert_minsert_block(block_name: str, x: float, y: float,
@@ -784,7 +784,7 @@ def insert_minsert_block(block_name: str, x: float, y: float,
                                      row_spacing, col_spacing)
     if layer:
         try: blk_ref.Layer = layer
-        except: pass
+        except Exception: pass
     db.upsert_entity(blk_ref.Handle, f"MInsert({block_name})", "AcDbMInsertBlock",
                      layer=blk_ref.Layer if hasattr(blk_ref, 'Layer') else layer or "0",
                      color=_com_get(blk_ref, "Color", 256) if hasattr(blk_ref, 'Color') else 256,
@@ -817,7 +817,7 @@ def add_shape(shape_name: str, x: float, y: float,
     shape = ctrl.add_shape(shape_name, x, y, z, scale, rotation)
     if color != "bylayer":
         try: _com_set(shape, "Color", resolve_color(color))
-        except: pass
+        except Exception: pass
     db.upsert_entity(shape.Handle, f"Shape({shape_name})", "AcDbShape",
                      layer=shape.Layer, color=_com_get(shape, "Color", 256),
                      geometry={"shape_name": shape_name,

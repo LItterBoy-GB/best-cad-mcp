@@ -1,6 +1,6 @@
 """CAD MCP Tools — Block creation, insertion, attribute editing, and Xref management."""
 import os
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from src.cad_controller import get_controller, to_variant_point
 from src.cad_database import get_database
 from src.cad_utils import format_success
@@ -34,8 +34,8 @@ def create_block(name: str, base_x: float, base_y: float, base_z: float,
         else:
             not_found.append(h)
     if not entities:
-        return f"错误: 未找到任何指定实体"
-    blk = ctrl.create_block(name, (base_x, base_y, base_z), entities)
+        return "错误: 未找到任何指定实体"
+    ctrl.create_block(name, (base_x, base_y, base_z), entities)
     msg = format_success(f"已创建图块 '{name}'", entity_count=len(entities))
     if not_found:
         msg += f"\n  未找到的句柄: {not_found}"
@@ -101,7 +101,7 @@ def explode_block(handle: str) -> str:
         return "错误: 未连接到打开的 AutoCAD 图形"
     r = ctrl.explode_entity(handle)
     if r["success"]:
-        return format_success(f"已分解图块", entity_count=len(r.get("new_handles", [])))
+        return format_success("已分解图块", entity_count=len(r.get("new_handles", [])))
     return f"分解失败: {r['message']}"
 
 

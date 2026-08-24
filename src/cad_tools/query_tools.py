@@ -1,6 +1,5 @@
 """CAD MCP Tools — Selection sets, entity scanning, spatial queries, highlight."""
 from typing import Optional, List, Dict, Any
-import json
 from src.cad_controller import get_controller
 from src.cad_database import get_database
 from src.cad_utils import format_success
@@ -262,6 +261,6 @@ def get_entity_statistics() -> str:
         lines.append(f"  {t}: {c}")
 
     lines.append(f"\n按图层 ({len(layer_stats)} 个):")
-    for l, c in sorted(layer_stats.items(), key=lambda x: -x[1])[:15]:
-        lines.append(f"  {l}: {c}")
+    for name, c in sorted(layer_stats.items(), key=lambda x: -x[1])[:15]:
+        lines.append(f"  {name}: {c}")
     return "\n".join(lines)

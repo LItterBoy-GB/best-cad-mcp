@@ -1,7 +1,7 @@
 """CAD MCP Tools — Polyline vertex and segment operations.
 Bulge, width, vertex add/remove, segment inspection.
 """
-from typing import Optional, List, Dict, Any
+from typing import Optional
 from src.cad_controller import get_controller
 from src.cad_database import get_database
 from src.cad_utils import format_success

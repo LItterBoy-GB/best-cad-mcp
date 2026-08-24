@@ -34,6 +34,9 @@ jobs:
         run: |
           python -c "import importlib.metadata as m; assert m.version('mcp').split('.', 1)[0] == '2'; from src.server import mcp; from mcp.server.mcpserver import MCPServer; assert isinstance(mcp, MCPServer)"
 
+      - name: Lint with ruff
+        run: ruff check src tests scripts prompts
+
       - name: Check release version
         id: version
         shell: pwsh

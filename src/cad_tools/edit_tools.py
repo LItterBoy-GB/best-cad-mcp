@@ -1,6 +1,6 @@
 """CAD MCP Tools — Entity editing: move, rotate, copy, delete, scale, mirror,
 offset, array, explode, and property manipulation."""
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from src.cad_controller import get_controller
 from src.cad_database import get_database
 from src.cad_utils import format_success, com_get as _com_get
@@ -77,7 +77,7 @@ def copy_entity(handle: str, from_point: List[float] = None,
             db.upsert_entity(new_h, orig.get("name","Copy"), orig.get("type",""),
                              layer=orig.get("layer","0"), color=orig.get("color",256),
                              geometry=orig.get("geometry",{}))
-        return format_success(f"已复制实体", new_handle=new_h,
+        return format_success("已复制实体", new_handle=new_h,
                               source_handle=handle)
     return f"复制实体失败: {r['message']}"
 
@@ -270,7 +270,7 @@ def get_entity_properties(handle: str) -> str:
         handle: 实体句柄
     """
     r = ctrl.get_entity_properties(handle)
-    if isinstance(r, dict) and r.get("success") == False:
+    if isinstance(r, dict) and r.get("success") is False:
         return f"获取属性失败: {r.get('message')}"
     import json
     return json.dumps(r, indent=2, ensure_ascii=False, default=str)
@@ -485,8 +485,8 @@ def stretch_entities(x1: float, y1: float, x2: float, y2: float,
     """
     cmd = (f"STRETCH C {x1},{y1} {x2},{y2} \n"
            f"{from_x},{from_y},{from_z} {to_x},{to_y},{to_z} \n")
-    r = ctrl.send_command(cmd)
-    return format_success(f"已拉伸选择区域",
+    ctrl.send_command(cmd)
+    return format_success("已拉伸选择区域",
                           window=f"({x1},{y1}) → ({x2},{y2})",
                           displacement=f"({to_x-from_x},{to_y-from_y})")
 
@@ -594,5 +594,3 @@ def fillet_polyline(handle: str, radius: float) -> str:
     if not r["success"]:
         return f"多段线圆角失败: {r['message']}"
     return format_success(f"已对多段线圆角 (R={radius})")
-    return format_success(f"已修改实体长度",
-                          handle=handle, mode=mode, value=value)

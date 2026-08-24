@@ -274,7 +274,6 @@ def get_snapshots(limit: int = 5) -> str:
     Args:
         limit: 返回的快照数量
     """
-    import json
     snapshots = db.get_recent_snapshots(limit)
     if not snapshots:
         return "无快照记录"

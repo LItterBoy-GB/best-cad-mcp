@@ -117,7 +117,7 @@ def add_leader(points: List[Any], annotation: Optional[str] = None,
     handle, error = _extract_handle_or_error(leader, "绘制引线")
     if error:
         return error
-    return format_success(f"已绘制引线", handle=handle)
+    return format_success("已绘制引线", handle=handle)
 
 
 def add_mleader(text: str, points: List[Any],

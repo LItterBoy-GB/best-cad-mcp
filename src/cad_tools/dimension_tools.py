@@ -267,8 +267,8 @@ def add_baseline_dimension(x: float, y: float, z: float = 0.0,
         ctrl.create_layer(layer)
         ctrl.set_current_layer(layer)
     cmd = f"DIMBASELINE {x},{y},{z} \n \n"
-    r = ctrl.send_command(cmd)
-    return format_success(f"已添加基线标注", point=f"({x},{y},{z})")
+    ctrl.send_command(cmd)
+    return format_success("已添加基线标注", point=f"({x},{y},{z})")
 
 
 def add_continue_dimension(x: float, y: float, z: float = 0.0,
@@ -286,8 +286,8 @@ def add_continue_dimension(x: float, y: float, z: float = 0.0,
         ctrl.create_layer(layer)
         ctrl.set_current_layer(layer)
     cmd = f"DIMCONTINUE {x},{y},{z} \n \n"
-    r = ctrl.send_command(cmd)
-    return format_success(f"已添加连续标注", point=f"({x},{y},{z})")
+    ctrl.send_command(cmd)
+    return format_success("已添加连续标注", point=f"({x},{y},{z})")
 
 
 def draw_wipeout(p1_x: float, p1_y: float, p2_x: float, p2_y: float,
@@ -318,7 +318,7 @@ def draw_wipeout(p1_x: float, p1_y: float, p2_x: float, p2_y: float,
     r = ctrl.run_lisp(f'(command "._WIPEOUT" {point_expr} "")')
     if not r["success"]:
         return f"区域覆盖失败: {r['message']}"
-    return format_success(f"已创建区域覆盖",
+    return format_success("已创建区域覆盖",
                           vertices=len(points))
 
 
@@ -376,7 +376,7 @@ def add_3point_angular_dimension(vertex_x: float, vertex_y: float,
         (ref1_x, ref1_y, 0),
         (ref2_x, ref2_y, 0),
         (text_x, text_y, 0))
-    return format_success(f"已添加三点角度标注",
+    return format_success("已添加三点角度标注",
                           handle=dim.Handle)
 
 
@@ -516,7 +516,7 @@ def set_text_properties(handle: str, oblique_angle: Optional[float] = None,
         if style_name is not None:
             ent.StyleName = str(style_name)
             changed["style_name"] = style_name
-        return format_success(f"已更新文字属性",
+        return format_success("已更新文字属性",
                               handle=handle, changed=str(changed))
     except Exception as e:
         return f"设置文字属性失败: {e}"

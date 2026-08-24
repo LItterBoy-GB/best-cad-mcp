@@ -13,7 +13,7 @@ from packaging.specifiers import SpecifierSet
 from packaging.version import InvalidVersion, Version
 from src.cad_controller import get_controller
 from src.cad_database import get_database
-from src.cad_utils import format_success, resolve_color, com_get as _com_get, com_set as _com_set
+from src.cad_utils import format_success, resolve_color, com_set as _com_set
 from src.cad_understanding.result import ToolResult, error_result, ok_result
 
 ctrl = get_controller()

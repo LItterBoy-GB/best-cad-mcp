@@ -259,7 +259,7 @@ def add_viewport(center_x: float, center_y: float, width: float,
             vp.ViewportOn = True
         except Exception:
             pass
-        return format_success(f"已创建图纸空间视口", handle=vp.Handle,
+        return format_success("已创建图纸空间视口", handle=vp.Handle,
                               size=f"{width}×{height}")
     except Exception as e:
         return f"创建视口失败: {e}"

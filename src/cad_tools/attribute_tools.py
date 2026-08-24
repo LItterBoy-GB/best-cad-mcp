@@ -37,7 +37,7 @@ def insert_block_with_attributes(block_name: str, x: float, y: float,
         block_name, x, y, z, x_scale, y_scale, z_scale, rotation, attributes)
     if layer:
         try: blk_ref.Layer = layer
-        except: pass
+        except Exception: pass
     db.upsert_entity(blk_ref.Handle, f"BlockRef({block_name})", "AcDbBlockReference",
                      layer=blk_ref.Layer, color=_com_get(blk_ref, "Color", 256),
                      geometry={"block_name": block_name,

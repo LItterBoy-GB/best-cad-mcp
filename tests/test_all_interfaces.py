@@ -14,11 +14,9 @@ Or simply:
 
 import sys
 import os
-import json
 import inspect
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock, call
-from typing import get_type_hints, Optional, List, Dict, Any, Tuple
 
 # Add project to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -97,7 +95,6 @@ with patch('src.cad_controller.CADController', autospec=True) as mock_ctrl_cls, 
 
     # Import shared modules
     from src import cad_utils
-    from src import cad_data_model
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1230,7 +1227,7 @@ class TestDatabase(unittest.TestCase):
         ])
         layers = self.db.get_layers()
         self.assertEqual(len(layers), 2)
-        layer_names = [l["name"] for l in layers]
+        layer_names = [layer["name"] for layer in layers]
         self.assertIn("WALL", layer_names)
         self.assertIn("HIDDEN", layer_names)
 

@@ -25,7 +25,7 @@ from .common import (
     point_distance,
     stable_id,
 )
-from .dimension_binding import bind_all_dimensions, bind_dimension_to_geometry_data
+from .dimension_binding import bind_dimension_to_geometry_data
 from .result import ToolResult, ok_result
 
 

@@ -27,7 +27,6 @@ from .common import (
     get_db,
     get_entity,
     latest_validation_report,
-    line_length,
     point_distance,
     topology_for_handle,
     topology_summary,

@@ -9,7 +9,6 @@ These lock in the usability fixes:
 
 import sys
 import types
-from pathlib import Path
 from unittest.mock import MagicMock
 
 from src.cad_database import CADDatabase

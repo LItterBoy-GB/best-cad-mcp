@@ -18,8 +18,7 @@ import logging
 import os
 import shutil
 import time
-from typing import Optional, List, Tuple, Dict, Any, Union
-from contextlib import contextmanager
+from typing import Optional, List, Tuple, Dict, Any
 from src.cad_utils import DetailLevel, com_get, com_set
 
 try:
@@ -1543,7 +1542,7 @@ class CADController:
                 hatch.HatchStyle = int(hatch_style)
                 changed["hatch_style"] = int(hatch_style)
             hatch.Evaluate()
-            return {"success": True, "message": f"已更新填充属性", "changed": changed}
+            return {"success": True, "message": "已更新填充属性", "changed": changed}
         except Exception as e:
             return {"success": False, "message": f"设置填充属性失败: {e}"}
 
@@ -1676,7 +1675,7 @@ class CADController:
         region = self._get_entity(region_handle)
         path = self._get_entity(path_handle)
         if region is None or path is None:
-            raise ValueError(f"Region or path not found")
+            raise ValueError("Region or path not found")
         return self.doc.ModelSpace.AddExtrudedSolidAlongPath(region, path)
 
     @require_document
@@ -1769,7 +1768,7 @@ class CADController:
             region = solid.SectionSolid(
                 to_variant_point(*p1), to_variant_point(*p2), to_variant_point(*p3))
             return {"success": True,
-                    "message": f"已创建截面区域",
+                    "message": "已创建截面区域",
                     "region_handle": region.Handle if hasattr(region, 'Handle') else None}
         except Exception as e:
             return {"success": False, "message": f"创建截面失败: {e}"}
@@ -2645,7 +2644,7 @@ class CADController:
         try:
             hl = ent.Hyperlinks.Item(index)
             hl.Delete()
-            return {"success": True, "message": f"已删除超链接"}
+            return {"success": True, "message": "已删除超链接"}
         except Exception as e:
             return {"success": False, "message": f"删除超链接失败: {e}"}
 
@@ -2724,7 +2723,7 @@ class CADController:
             o = to_variant_point(*origin)
             x = to_variant_point(*x_axis_pt)
             y = to_variant_point(*y_axis_pt)
-            ucs = self.doc.UserCoordinateSystems.Add(o, x, y, name)
+            self.doc.UserCoordinateSystems.Add(o, x, y, name)
             return {"success": True, "message": f"已创建UCS '{name}'", "name": name}
         except Exception as e:
             return {"success": False, "message": f"创建UCS失败: {e}"}
@@ -3415,7 +3414,7 @@ class CADController:
             return {"success": False, "message": f"未找到实体: {handle}"}
         com_set(ent, "Color", int(original_color))
         ent.Update()
-        return {"success": True, "message": f"已重置颜色"}
+        return {"success": True, "message": "已重置颜色"}
 
     # ── Scanning ───────────────────────────────────────────
 

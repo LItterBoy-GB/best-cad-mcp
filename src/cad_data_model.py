@@ -20,7 +20,7 @@ Design principles:
 
 from dataclasses import dataclass, field, asdict
 from typing import Optional, List, Tuple, Dict, Any
-from enum import Enum, auto
+from enum import Enum
 import json
 import math
 
@@ -467,7 +467,7 @@ class CADDocument:
             "author": self.author,
             "comments": self.comments,
             "keywords": self.keywords,
-            "layers": [l.to_dict() for l in self.layers],
+            "layers": [layer.to_dict() for layer in self.layers],
             "blocks": [b.to_dict() for b in self.blocks],
             "layouts": self.layouts,
             "groups": self.groups,

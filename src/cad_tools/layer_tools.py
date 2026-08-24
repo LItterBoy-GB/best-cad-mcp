@@ -1,5 +1,4 @@
 """CAD MCP Tools — Layer management (full CRUD, freeze/thaw, lock/unlock, isolate)."""
-from typing import Optional, List
 from src.cad_controller import get_controller
 from src.cad_database import get_database
 from src.cad_utils import format_success
@@ -126,15 +125,15 @@ def get_all_layers() -> str:
     if not layers:
         return "无图层信息"
     lines = [f"共 {len(layers)} 个图层:"]
-    for i, l in enumerate(layers):
+    for i, layer in enumerate(layers):
         status = []
-        if l["is_frozen"]: status.append("冻结")
-        if l["is_locked"]: status.append("锁定")
-        if not l["is_on"]: status.append("关闭")
+        if layer["is_frozen"]: status.append("冻结")
+        if layer["is_locked"]: status.append("锁定")
+        if not layer["is_on"]: status.append("关闭")
         status_str = ",".join(status) if status else "正常"
         lines.append(
-            f"  [{i}] {l['name']:<20s} 颜色:{l['color']:<3d} "
-            f"线型:{l['linetype']:<12s} [{status_str}]")
+            f"  [{i}] {layer['name']:<20s} 颜色:{layer['color']:<3d} "
+            f"线型:{layer['linetype']:<12s} [{status_str}]")
     return "\n".join(lines)
 
 

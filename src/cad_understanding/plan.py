@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
@@ -179,7 +178,6 @@ def _validate_variables(normalized: Dict[str, Any]) -> List[Dict[str, Any]]:
     errors: List[Dict[str, Any]] = []
     known = set(normalized.get("variables", {}).keys())
     for index, step in enumerate(normalized["steps"]):
-        step_id = str(step.get("step_id") or f"step_{index + 1}")
         refs = _collect_variables(step.get("args", {}) or {})
         missing = sorted(ref for ref in refs if ref not in known)
         for ref in missing:
