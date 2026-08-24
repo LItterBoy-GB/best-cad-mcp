@@ -11,7 +11,7 @@ import json
 import sys
 import traceback
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -268,6 +268,80 @@ def main() -> int:
     )
     step("rescan_after_plan", lambda: query_tools.scan_all_entities(clear_db=True, max_entities=500, topology_detail="full"))
     step("validate_geometry_after_plan", lambda: validate_geometry())
+
+    rollback_plan = {
+        "plan_id": "smoke_rollback_plan",
+        "description": "Draw a probe circle then fail on a bogus delete to exercise rollback.",
+        "units": "drawing_units",
+        "steps": [
+            {
+                "step_id": "draw_rollback_probe",
+                "op": "draw_circle",
+                "args": {"center_x": 105, "center_y": 40, "radius": 3, "layer": "CHECK"},
+                "save_as": "$rollback_probe",
+                "postconditions": [{"type": "exists", "target": "$rollback_probe"}],
+            },
+            {
+                "step_id": "fail_bogus_delete",
+                "op": "delete_entity",
+                "args": {"handle": "FFFF0000"},
+            },
+        ],
+        "risk_level": "medium",
+        "requires_confirmation": True,
+    }
+    rollback_result = step(
+        "execute_cad_plan_rollback_case",
+        lambda: execute_cad_plan(
+            rollback_plan,
+            allow_modify=True,
+            transactional=True,
+            rollback_on_error=True,
+            validate_after_plan=False,
+            rescan_after_plan=False,
+        ),
+        required=False,
+    )
+    rollback_ok = False
+    probe_handle = None
+    if isinstance(rollback_result, dict) and rollback_result.get("ok") is False:
+        data = rollback_result.get("data") or {}
+        rollback_status = data.get("rollback_status") or {}
+        failed_step = data.get("failed_step") or {}
+        for completed in data.get("completed_steps") or []:
+            if completed.get("step_id") == "draw_rollback_probe":
+                handles = (completed.get("outputs") or {}).get("handles") or []
+                probe_handle = handles[0] if handles else None
+        rollback_ok = (
+            failed_step.get("step_id") == "fail_bogus_delete"
+            and bool(rollback_status.get("ok"))
+            and probe_handle is not None
+        )
+    # A successful rollback removes the probe circle drawn by the failed plan
+    # while preserving pre-existing geometry, so a full rescan must return to
+    # the pre-plan entity count (7 entities in this smoke drawing; without
+    # rollback it would be 8).
+    rescan_value = step(
+        "rollback_rescan",
+        lambda: query_tools.scan_all_entities(clear_db=True, max_entities=500),
+        required=False,
+    )
+    rescan_text = str(rescan_value or "")
+    restored = "扫描 7 个实体" in rescan_text or "Scanned 7/7" in rescan_text
+    report["steps"].append({
+        "name": "rollback_case_verified",
+        "ok": rollback_ok and restored,
+        "result": {
+            "plan_failed_as_expected": rollback_ok,
+            "probe_handle": probe_handle,
+            "entity_count_restored": restored,
+        },
+    })
+    if not (rollback_ok and restored):
+        report["failures"].append({"name": "rollback_case_verified", "result": {
+            "plan_failed_as_expected": rollback_ok,
+            "entity_count_restored": restored,
+        }})
 
     report["artifacts"] = [str(item) for item in report["artifacts"] if item]
     report["ok"] = not report["failures"]
