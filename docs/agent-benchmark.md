@@ -28,6 +28,12 @@ a new baseline **before** testing either model. Do not invent ground truth from
 the model's own findings. Keep judge annotations out of the model's context.
 Import can change handles: annotate the baseline in the actual run drawing or
 verify a mapping to it; do not copy handle IDs from historical demo artifacts.
+Use `import_dxf(filepath, allow_modify=True)` for DXF input. It creates a
+separate unsaved drawing; `open_drawing` is reserved for DWG. Inspect units,
+scan the imported entities, and inspect the actual raster before accepting a
+visual baseline. A readable image file alone does not prove a useful export.
+After restarting an MCP server, call `get_document_info` to activate the current
+drawing's metadata scope before reading cached scans or snapshots.
 To freeze an independent answer key or reviewer protocol, add repository-relative
 file paths to a top-level `judge_assets` array in a custom suite before preparing
 it. Those bytes become part of the baseline. Keep these files with the reviewer,

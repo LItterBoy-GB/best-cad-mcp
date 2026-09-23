@@ -920,6 +920,9 @@ class CADController:
                 pass
             selection_set = self.doc.SelectionSets.Add(ss_name)
             if format_type in {"WMF", "BMP"} and self.doc.ModelSpace.Count > 0:
+                # Newly imported entities may not yet have display graphics.
+                # Export can otherwise succeed with an empty metafile.
+                self.doc.Regen(1)
                 items = [
                     self.doc.ModelSpace.Item(index)
                     for index in range(self.doc.ModelSpace.Count)
